@@ -1,11 +1,8 @@
-# frozen_string_literal: true
+# Gemfile
 
 source 'https://rubygems.org'
 
-git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+ruby '3.2.2'
 
-group :development do
-  gem 'rubocop', require: false
-end
-
-gem 'minitest', '~> 5.0'
+gem 'rspec'
+gem 'tty-prompt'
