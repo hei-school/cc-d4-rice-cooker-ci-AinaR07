@@ -3,6 +3,8 @@ version: 2.1
 jobs:
   build:
     runs-on: ubuntu-latest
+    machine:
+      image: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
