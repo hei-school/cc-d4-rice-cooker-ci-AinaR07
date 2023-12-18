@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Compile and run tests
           command: |
-            gcc -o test_suite test_suite.c -lcunit
+            gcc -o test_suite RiceCookerTest.c -lcunit
             ./test_suite
 
 workflows:
