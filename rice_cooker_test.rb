@@ -1,4 +1,3 @@
-
 require_relative 'RiceCooker'
 require 'rspec'
 require 'tty-prompt'
