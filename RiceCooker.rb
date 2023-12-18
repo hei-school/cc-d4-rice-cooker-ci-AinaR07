@@ -1,100 +1,110 @@
 # frozen_string_literal: true
 
-# Simulates the functionality of a rice cooker with various cooking options.
-class RiceCooker
-  def initialize
-    @cooked_rice = false
-  end
+def afficher_menu
+  puts 'Que souhaitez-vous faire?'
+  puts '1. Cuire du riz'
+  puts '2. Cuisson à la vapeur'
+  puts '3. Cuisson des céréales'
+  puts '4. Cuisson de la soupe'
+  puts '5. Bouillir de l\'eau'
+  puts '6. Cuisson du dessert'
+  puts '7. Maintenir au chaud' 
+  puts '8. Quitter'
+end
 
-  def cook_item(ingredient, success_message)
-    puts "Ajout de #{ingredient}..."
-    delay(1000)
-    beep
-    puts "#{success_message} terminée !"
-    true
-  rescue StandardError => e
-    puts "Une erreur s'est produite lors de la cuisson de #{ingredient}: #{e.message}"
-    false
-  end
+def choisir_option
+  print 'Choisissez une option : '
+  choix = gets.chomp.to_i
+  raise 'Option invalide. Veuillez choisir un nombre entre 1 et 8.' unless (1..8).include?(choix)
 
-  def cook_rice
-    cook_item('du riz', 'Cuisson du riz')
-  end
+  choix
+end
 
-  def keep_warm
-    cook_item('de la nourriture', 'Maintien au chaud de la nourriture')
-  end
+def attendre(msi)
+  sleep(msi / 1000.0)
+end
 
-  def steam_cook
-    cook_item('de la nourriture pour la cuisson à la vapeur', 'Cuisson à la vapeur')
-  end
+def cuire_riz
+  puts 'Cuisson du riz en cours...'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Le riz est cuit'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Cuisson terminée'
+end
 
-  def cook_soup
-    cook_item("de l'eau", 'Cuisson de la soupe')
-  end
+def cuisson_vapeur
+  puts 'Cuisson à la vapeur...'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Veuillez Patientez SVP'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Cuisson terminée'
+end
 
-  def cook_dessert
-    cook_item('des ingrédients pour le dessert', 'Cuisson du dessert')
-  end
+def cuisson_cereales
+  puts 'Cuisson des céréales...'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Cuisson terminée'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Ca y est c\'est prêt'
+end
 
-  def beep
-    puts 'BEEP BEEP BEEP - Cuisson terminée !'
-  end
+def cuisson_soupe
+  puts 'Cuisson de la soupe...'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Cuisson terminée'
+  attendre(5000) # Attendre 5 secondes
+  puts 'La soupe est prête'
+end
 
-  def start
-    loop do
-      display_options
-      choice = user_choice
+def bouillir_eau
+  puts 'Bouillir de l\'eau...'
+  attendre(5000) # Attendre 5 secondes
+  puts 'tic tic tic tic'
+  attendre(5000) # Attendre 5 secondes
+  puts 'L\'eau est chaude'
+end
 
-      handle_choice(choice)
-      break if choice == 6
+def cuisson_dessert
+  puts 'Cuisson du dessert...'
+  attendre(5000) # Attendre 5 secondes
+  puts 'Cuisson terminée'
+  attendre(5000) # Attendre 5 secondes
+  puts 'C\'est prêt'
+end
+
+def maintenir_chaud
+  puts 'Maintenir au chaud...'
+  attendre(5000) # Attendre 5 secondes
+end
+
+def main
+  loop do
+    afficher_menu
+    begin
+      option = choisir_option
+      case option
+      when 1
+        cuire_riz
+      when 2
+        cuisson_vapeur
+      when 3
+        cuisson_cereales
+      when 4
+        cuisson_soupe
+      when 5
+        bouillir_eau
+      when 6
+        cuisson_dessert
+      when 7
+        maintenir_chaud
+      when 8
+        puts 'Au revoir et bon appétit !!!'
+        return
+      end
+    rescue StandardError => e
+      puts e
     end
-  end
-
-  private
-
-  def display_options
-    puts "\nQue souhaitez-vous faire ?"
-    puts '1. Cuire du riz'
-    puts '2. Maintenir au chaud'
-    puts '3. Cuisson à la vapeur'
-    puts '4. Cuisson de la soupe'
-    puts '5. Cuisson du dessert'
-    puts '6. Quitter'
-    print 'Choisissez une option : '
-  end
-
-  def user_choice
-    input = gets.chomp
-    input.to_i.zero? && input != '0' ? 0 : input.to_i
-  end
-
-  def handle_choice(choice)
-    case choice
-    when 1 then cook_rice
-    when 2 then keep_warm
-    when 3 then steam_cook
-    when 4 then cook_soup
-    when 5 then cook_dessert
-    when 6 then quit
-    else invalid_choice
-    end
-  end
-
-  def quit
-    puts 'Au revoir !'
-  end
-
-  def invalid_choice
-    puts 'Choix non valide. Veuillez choisir une option valide'
-  end
-
-  def delay(milliseconds)
-    sleep(milliseconds / 1000.0)
   end
 end
 
-if __FILE__ == $PROGRAM_NAME
-  rice_cooker = RiceCooker.new
-  rice_cooker.start
-end
+main
