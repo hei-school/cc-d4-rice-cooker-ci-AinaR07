@@ -1,110 +1,119 @@
 # frozen_string_literal: true
 
-def afficher_menu
-  puts 'Que souhaitez-vous faire?'
-  puts '1. Cuire du riz'
-  puts '2. Cuisson à la vapeur'
-  puts '3. Cuisson des céréales'
-  puts '4. Cuisson de la soupe'
-  puts '5. Bouillir de l\'eau'
-  puts '6. Cuisson du dessert'
-  puts '7. Maintenir au chaud' 
-  puts '8. Quitter'
+require 'tty-prompt'
+
+def choisir_mode
+  prompt = TTY::Prompt.new
+
+  afficher_modes
+  choix = prompt.select('Choisissez un mode de cuisson :', modes_disponibles)
+  temps_cuisson = determiner_temps(choix, prompt)
+
+  return unless temps_cuisson.positive?
+
+  afficher_alertes(prompt, temps_cuisson)
 end
 
-def choisir_option
-  print 'Choisissez une option : '
-  choix = gets.chomp.to_i
-  raise 'Option invalide. Veuillez choisir un nombre entre 1 et 8.' unless (1..8).include?(choix)
-
-  choix
+def afficher_modes
+  puts 'Modes disponibles :'
+  puts '1. Riz Blanc'
+  puts '2. Riz Complet'
+  puts '3. Cuisson Vapeur'
+  puts '4. Autre aliment'
 end
 
-def attendre(msi)
-  sleep(msi / 1000.0)
+def modes_disponibles
+  ['Riz Blanc', 'Riz Complet', 'Cuisson Vapeur', 'Autre aliment']
 end
 
-def cuire_riz
-  puts 'Cuisson du riz en cours...'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Le riz est cuit'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Cuisson terminée'
+def determiner_temps(choix, prompt)
+  case choix
+  when 'Riz Blanc', 'Riz Complet', 'Cuisson Vapeur'
+    afficher_mode_selectionne(choix)
+    2
+  when 'Autre aliment'
+    determiner_temps_autre_aliment(prompt)
+  else
+    afficher_erreur_choix
+    0
+  end
+rescue StandardError => e
+  gerer_erreur_temps(e)
 end
 
-def cuisson_vapeur
-  puts 'Cuisson à la vapeur...'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Veuillez Patientez SVP'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Cuisson terminée'
+def afficher_mode_selectionne(choix)
+  puts "Mode #{choix} sélectionné"
 end
 
-def cuisson_cereales
-  puts 'Cuisson des céréales...'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Cuisson terminée'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Ca y est c\'est prêt'
+def determiner_temps_autre_aliment(prompt)
+  temps_personnalise = prompt.ask('Entrez le temps de cuisson en secondes pour l\'autre aliment : ').to_i
+  temps_personnalise.positive? ? temps_personnalise : afficher_temps_invalide
+rescue StandardError => e
+  gerer_erreur_temps(e)
 end
 
-def cuisson_soupe
-  puts 'Cuisson de la soupe...'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Cuisson terminée'
-  attendre(5000) # Attendre 5 secondes
-  puts 'La soupe est prête'
+def afficher_temps_invalide
+  puts 'Temps invalide.'
+  0
 end
 
-def bouillir_eau
-  puts 'Bouillir de l\'eau...'
-  attendre(5000) # Attendre 5 secondes
-  puts 'tic tic tic tic'
-  attendre(5000) # Attendre 5 secondes
-  puts 'L\'eau est chaude'
+def afficher_erreur_choix
+  puts 'Choix non valide'
 end
 
-def cuisson_dessert
-  puts 'Cuisson du dessert...'
-  attendre(5000) # Attendre 5 secondes
-  puts 'Cuisson terminée'
-  attendre(5000) # Attendre 5 secondes
-  puts 'C\'est prêt'
+def afficher_alertes(prompt, temps_cuisson)
+  puts 'Types d\'alertes disponibles :'
+  alertes = ['Son', 'Lumières clignotantes']
+  choix_alerte = prompt.select('Choisissez le type d\'alerte pour signaler la fin de la cuisson :', alertes)
+
+  return unless alertes.include?(choix_alerte)
+
+  alerte_selectionnee(prompt, choix_alerte, temps_cuisson)
 end
 
-def maintenir_chaud
-  puts 'Maintenir au chaud...'
-  attendre(5000) # Attendre 5 secondes
+def alerte_selectionnee(prompt, choix_alerte, temps_cuisson)
+  threads = []
+  threads << Thread.new do
+    afficher_alerte(choix_alerte, temps_cuisson)
+  end
+
+  threads << Thread.new do
+    choix_apres_cuisson = prompt.select('Que voulez-vous faire maintenant?', ['Éteindre', 'Maintenir au chaud'])
+    traiter_choix_apres_cuisson(choix_apres_cuisson)
+  end
+
+  threads.each(&:join)
 end
 
-def main
-  loop do
-    afficher_menu
-    begin
-      option = choisir_option
-      case option
-      when 1
-        cuire_riz
-      when 2
-        cuisson_vapeur
-      when 3
-        cuisson_cereales
-      when 4
-        cuisson_soupe
-      when 5
-        bouillir_eau
-      when 6
-        cuisson_dessert
-      when 7
-        maintenir_chaud
-      when 8
-        puts 'Au revoir et bon appétit !!!'
-        return
-      end
-    rescue StandardError => e
-      puts e
-    end
+def afficher_alerte(choix_alerte, temps_cuisson)
+  sleep temps_cuisson
+  message = message_alerte(choix_alerte)
+  puts message
+end
+
+def message_alerte(choix_alerte)
+  if choix_alerte == 'Son'
+    '*BIP*BIP*BIP* La cuisson est terminée !'
+  else
+    '*lumières clignotantes* La cuisson est terminée !'
   end
 end
 
-main
+def traiter_choix_apres_cuisson(choix_apres_cuisson)
+  case choix_apres_cuisson
+  when 'Éteindre'
+    puts 'Le rice cooker a été éteint.'
+  when 'Maintenir au chaud'
+    puts 'Le riz est maintenu au chaud.'
+  else
+    puts 'Choix non valide. Le rice cooker sera éteint par défaut.'
+  end
+end
+
+def gerer_erreur_temps(erreur)
+  puts "Une erreur s'est produite : #{erreur.message}"
+  puts 'Veuillez réessayer ou contacter le support.'
+  0
+end
+
+choisir_mode
