@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: gcc:latest
 
-    working_directory: https://github.com/AinaR07/cc-d4-rice-cooker-ci-AinaR07/tree/feature/C
+    working_directory: /app
 
     steps:
       - checkout
