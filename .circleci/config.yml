@@ -1,0 +1,33 @@
+version: 2.1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    machine:
+      image: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dart
+
+      - name: Run tests
+        run: |
+          dart test
+
+      - name: Build executable
+        run: |
+          dart compile exe main.dart
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: rice-cooker
+          path: build/rice-cooker
+
+workflows:
+  main:
+    jobs:
+      - build
