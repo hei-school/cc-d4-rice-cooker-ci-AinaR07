@@ -1,0 +1,33 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: node:latest
+
+    working_directory: /https://github.com/AinaR07/cc-d4-rice-cooker-ci-AinaR07/blob/feature/typescript
+    
+
+    steps:
+      - checkout
+
+      # Install Node.js dependencies
+      - run:
+          name: Install Node.js dependencies
+          command: npm install
+
+      # Run TypeScript ESLint
+      - run:
+          name: Run TypeScript ESLint
+          command: npx eslint .
+
+      # Run Jest tests
+      - run:
+          name: Run Jest tests
+          command: npm test
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
