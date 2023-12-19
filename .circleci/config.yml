@@ -1,0 +1,31 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: gcc:latest
+
+    working_directory: /app
+
+    steps:
+      - checkout
+
+      - run:
+          name: Compile RiceCooker.c
+          command: gcc -o RiceCooker RiceCooker.c
+
+      - run:
+          name: Run RiceCooker
+          command: ./RiceCooker
+
+      - run:
+          name: Compile and run tests
+          command: |
+            gcc -o test_suite RiceCookerTest.c -lcunit
+            ./test_suite
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
